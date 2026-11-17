@@ -1,0 +1,55 @@
+{
+  "dol_h2b": {
+    "ativo": true,
+    "dias_tentar": 5
+  },
+  "jobbank": {
+    "ativo": true,
+    "dias": 14,
+    "max_checagens_por_execucao": 100,
+    "termos": [
+      "welder",
+      "welder helper",
+      "welder fitter",
+      "metal fabricator",
+      "construction labourer",
+      "construction helper",
+      "general labourer",
+      "electrician",
+      "plumber",
+      "construction trades helper",
+      "carpenter helper",
+      "maintenance worker",
+      "janitor",
+      "farm worker"
+    ]
+  },
+  "lmia": {
+    "ativo": true,
+    "trimestres": 4,
+    "categorias": [
+      "soldagem",
+      "construcao",
+      "eletrica",
+      "hidraulica",
+      "servicos_gerais",
+      "producao"
+    ]
+  },
+  "adzuna": {
+    "ativo": false,
+    "app_id": "",
+    "app_key": "",
+    "paises": [
+      "us",
+      "ca"
+    ],
+    "dias": 21,
+    "termos": [
+      "welder visa sponsorship",
+      "welder LMIA",
+      "construction labourer LMIA",
+      "H-2B construction"
+    ]
+  }
+}

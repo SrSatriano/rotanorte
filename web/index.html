@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotaNorte</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<style>
+:root{
+ --bg:#f3f5f9;--sup:#ffffff;--sup2:#f8f9fc;--txt:#172033;--sub:#5f6b80;--fraco:#8b95a7;--borda:#e3e7ef;
+ --pri:#2563eb;--pri2:#e8efff;--pri-txt:#1d4ed8;--ok:#15803d;--ok2:#e3f6ea;--at:#b45309;--at2:#fff3dc;--er:#c62828;--er2:#fde9e9;
+ --lado:#0e1b33;--lado2:#14254a;--lado-txt:#b9c6e4;--sombra:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+ --sombra2:0 10px 30px rgba(16,24,40,.12);--raio:12px;
+}
+[data-tema=escuro]{
+ --bg:#0d1320;--sup:#151d2e;--sup2:#1a2338;--txt:#e6ebf5;--sub:#a3aec4;--fraco:#78839b;--borda:#26314a;
+ --pri:#5b8cff;--pri2:#1c2b52;--pri-txt:#9db8ff;--ok:#4ade80;--ok2:#12301f;--at:#fbbf24;--at2:#33270f;--er:#f87171;--er2:#3a1717;
+ --lado:#0a1020;--lado2:#121b33;--sombra:0 1px 2px rgba(0,0,0,.3);--sombra2:0 10px 30px rgba(0,0,0,.45)
+}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:"Segoe UI Variable","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14.5px;display:flex}
+a{color:var(--pri-txt)}button{font:inherit}
+/* ---------- barra lateral */
+aside{width:236px;flex:none;background:var(--lado);color:var(--lado-txt);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+.marca{display:flex;align-items:center;gap:10px;padding:20px 18px 16px;color:#fff}
+.marca b{font-size:19px;letter-spacing:.01em}.marca small{display:block;font-size:11.5px;color:var(--lado-txt);opacity:.8}
+.marca .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#22c55e);display:grid;place-items:center;font-size:21px}
+nav{padding:6px 10px;display:flex;flex-direction:column;gap:2px;flex:1;overflow:auto}
+nav button{display:flex;align-items:center;gap:11px;background:none;border:0;color:var(--lado-txt);padding:10px 12px;border-radius:9px;cursor:pointer;text-align:left;font-size:14.5px}
+nav button:hover{background:var(--lado2);color:#fff}nav button.ativo{background:#1f3a73;color:#fff;font-weight:600}
+nav .ic{width:20px;text-align:center;font-size:16px}nav .cont{margin-left:auto;background:#2a4a8f;color:#fff;border-radius:20px;font-size:11.5px;padding:1px 8px}
+nav .cont.alerta{background:#dc2626}
+.rodape-lado{padding:14px;border-top:1px solid #1d2c4d;display:flex;flex-direction:column;gap:8px}
+.rodape-lado .info{font-size:12px;color:var(--lado-txt);opacity:.85}
+.btn-busca{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:0;border-radius:10px;padding:11px;font-weight:600;cursor:pointer;display:flex;gap:8px;justify-content:center;align-items:center}
+.btn-busca:disabled{opacity:.7;cursor:progress}
+.tema{background:none;border:1px solid #2a3a5e;color:var(--lado-txt);border-radius:8px;padding:6px;cursor:pointer;font-size:12.5px}
+/* ---------- conteúdo */
+main{flex:1;min-width:0;height:100vh;overflow:auto}
+.topo{display:flex;align-items:center;gap:12px;padding:20px 28px 6px}
+.topo h1{font-size:22px;margin:0;font-weight:700}.topo .subt{color:var(--sub);font-size:13.5px;margin-top:2px}
+.pagina{display:none;padding:12px 28px 40px}.pagina.ativa{display:block}
+.card{background:var(--sup);border:1px solid var(--borda);border-radius:var(--raio);padding:18px;box-shadow:var(--sombra)}
+.card h2{font-size:15.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.grade{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.mt{margin-top:14px}
+.kpi{display:flex;gap:14px;align-items:center;cursor:pointer;transition:transform .12s}.kpi:hover{transform:translateY(-2px)}
+.kpi .ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none}
+.kpi .n{font-size:27px;font-weight:700;line-height:1.1}.kpi .r{color:var(--sub);font-size:13px}
+.i-azul{background:var(--pri2)}.i-verde{background:var(--ok2)}.i-amar{background:var(--at2)}.i-roxo{background:#efe7ff}[data-tema=escuro] .i-roxo{background:#2a1f4a}
+.btn{background:var(--pri);color:#fff;border:1px solid var(--pri);border-radius:9px;padding:8px 14px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap}
+.btn:hover{filter:brightness(1.07)}.btn.sec{background:var(--sup);color:var(--pri-txt);border-color:var(--borda)}.btn.sec:hover{border-color:var(--pri)}
+.btn.peq{padding:5px 10px;font-size:13px}.btn.fant{background:none;border-color:transparent;color:var(--sub)}.btn.fant:hover{color:var(--txt);background:var(--sup2)}
+input,select,textarea{font:inherit;color:var(--txt);background:var(--sup);border:1px solid var(--borda);border-radius:9px;padding:8px 10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri2)}
+textarea{width:100%;min-height:120px;resize:vertical}
+.selo{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;margin:2px 4px 2px 0;white-space:nowrap}
+.s-ok{background:var(--ok2);color:var(--ok)}.s-at{background:var(--at2);color:var(--at)}.s-er{background:var(--er2);color:var(--er)}.s-pri{background:var(--pri2);color:var(--pri-txt)}.s-cz{background:var(--sup2);color:var(--sub);border:1px solid var(--borda)}
+.novo{background:#7c3aed;color:#fff}
+.anel{--v:50;--c:var(--ok);width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:700;font-size:15px;
+ background:radial-gradient(closest-side,var(--sup) 76%,transparent 78% 100%),conic-gradient(var(--c) calc(var(--v)*1%),var(--borda) 0)}
+.anel.g{width:74px;height:74px;font-size:23px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--borda);background:var(--sup);color:var(--sub);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:13.5px}
+.chip.ativo{background:var(--pri);border-color:var(--pri);color:#fff}
+.vazio{text-align:center;color:var(--sub);padding:40px 20px}.vazio .e{font-size:38px;margin-bottom:6px}
+/* barras */
+.barra{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;margin:7px 0;font-size:13.5px}
+.barra .t{height:10px;border-radius:6px;background:var(--sup2);overflow:hidden;border:1px solid var(--borda)}.barra .t i{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#22c55e);border-radius:6px}
+.barra .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rosca{width:120px;height:120px;border-radius:50%;flex:none}
+.leg{display:flex;flex-direction:column;gap:6px;font-size:13.5px}.leg span{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+/* vagas: lista + detalhe */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.mestre{display:grid;grid-template-columns:minmax(330px,1fr) minmax(420px,1.25fr);gap:14px;align-items:start}
+.lista{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--borda);border-radius:11px;background:var(--sup);cursor:pointer;box-shadow:var(--sombra);transition:border-color .1s}
+.item:hover{border-color:#9db4ec}.item.sel{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri2)}
+.item h3{margin:0;font-size:14.8px;font-weight:650}.item .m{color:var(--sub);font-size:13px;margin-top:2px}
+.item .corpo{min-width:0;flex:1}.item .linha{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detalhe{position:sticky;top:12px;max-height:calc(100vh - 110px);overflow:auto}
+.det-topo{display:flex;gap:16px;align-items:flex-start}
+.det-topo h2{font-size:19px;margin:0 0 4px}
+.secao{margin-top:16px}.secao h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--fraco)}
+.motivos{margin:0;padding-left:0;list-style:none}.motivos li{padding:3px 0;font-size:13.8px}
+.desc{white-space:pre-wrap;font-size:13.8px;color:var(--sub);background:var(--sup2);border:1px solid var(--borda);border-radius:9px;padding:12px;max-height:260px;overflow:auto}
+.status-seg{display:flex;flex-wrap:wrap;gap:4px}
+.status-seg button{border:1px solid var(--borda);background:var(--sup);color:var(--sub);border-radius:8px;padding:5px 9px;font-size:12.8px;cursor:pointer}
+.status-seg button.ativo{background:var(--pri);color:#fff;border-color:var(--pri)}
+.dinheiro{font-size:13px;color:var(--ok);font-weight:600}
+/* kanban */
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.coluna{background:var(--sup2);border:1px solid var(--borda);border-radius:12px;padding:10px;min-height:300px}
+.coluna h3{font-size:13.5px;margin:2px 4px 10px;display:flex;justify-content:space-between}
+.coluna.sobre{outline:2px dashed var(--pri);outline-offset:-4px}
+.kcard{background:var(--sup);border:1px solid var(--borda);border-radius:10px;padding:10px;margin-bottom:8px;cursor:grab;box-shadow:var(--sombra);font-size:13.5px}
+.kcard b{display:block;font-size:13.8px}.kcard .m{color:var(--sub);font-size:12.5px}
+/* tabela */
+table{width:100%;border-collapse:collapse;font-size:13.8px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--borda);vertical-align:top}
+th{position:sticky;top:0;background:var(--sup2);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--fraco);z-index:1}
+tr:hover td{background:var(--sup2)}
+/* caminhos */
+.via{border-left:5px solid}.via-agora{border-left-color:#16a34a}.via-preparar{border-left-color:#f59e0b}.via-longo{border-left-color:#ea580c}.via-nao{border-left-color:#dc2626}
+.req{font-size:13.8px;margin:3px 0}
+.passo{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--borda);align-items:flex-start}.passo:last-child{border:0}
+.passo input{margin-top:3px;width:17px;height:17px;accent-color:var(--ok)}
+.passo .prazo{min-width:128px;font-weight:600;color:var(--pri-txt);font-size:12.8px}
+.passo.feito .tt{text-decoration:line-through;color:var(--fraco)}
+.medidor{height:10px;border-radius:6px;background:var(--sup2);border:1px solid var(--borda);overflow:hidden}.medidor i{display:block;height:100%;border-radius:6px}
+/* perfil */
+label.campo{display:flex;flex-direction:column;gap:5px;font-size:12.8px;color:var(--sub);font-weight:600}
+label.campo input,label.campo select,label.campo textarea{font-weight:400;font-size:14.5px}
+.linha-exp{display:grid;grid-template-columns:1.3fr 1.5fr 1.2fr .6fr 1fr auto;gap:6px;margin-bottom:6px}.linha-exp>*{min-width:0;width:100%}.linha-exp>button{width:auto}
+/* avisos, toast, modal */
+.aviso{background:var(--at2);border:1px solid #f1d39a;color:var(--txt);border-radius:10px;padding:11px 14px;font-size:13.8px}
+[data-tema=escuro] .aviso{border-color:#5a4416}
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.toast{background:#111827;color:#fff;padding:11px 16px;border-radius:10px;box-shadow:var(--sombra2);font-size:14px;animation:entra .2s ease}
+@keyframes entra{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.fundo{position:fixed;inset:0;background:rgba(10,15,30,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.fundo.aberto{display:flex}.modal{background:var(--sup);border-radius:14px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:22px;box-shadow:var(--sombra2)}
+.log{background:#0b1220;color:#b8e6c3;font-family:Consolas,monospace;font-size:12px;padding:10px;border-radius:9px;max-height:220px;overflow:auto;white-space:pre-wrap;margin-top:10px}
+.esq{display:flex;gap:6px;align-items:center}
+.rot{color:var(--sub);font-size:13px}
+.skel{height:64px;border-radius:11px;background:linear-gradient(90deg,var(--sup2),var(--borda),var(--sup2));background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+@media(max-width:1100px){.mestre{grid-template-columns:1fr}.detalhe{position:fixed;inset:0;max-height:none;z-index:40;border-radius:0;display:none}.detalhe.aberto{display:block}.fechar-det{display:inline-flex!important}}
+@media(max-width:860px){body{flex-direction:column}aside{width:100%;height:auto;position:static}nav{flex-direction:row;overflow-x:auto}nav .cont{display:none}.marca{padding:12px}.rodape-lado{flex-direction:row;flex-wrap:wrap}.pagina,.topo{padding-left:14px;padding-right:14px}main{height:auto}.linha-exp{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<aside>
+ <div class="marca"><div class="logo">🧭</div><div><b>RotaNorte</b><small>vagas com visto · EUA e Canadá</small></div></div>
+ <nav id="menu">
+  <button data-p="inicio" class="ativo"><span class="ic">🏠</span>Início</button>
+  <button data-p="vagas"><span class="ic">💼</span>Vagas<span class="cont" id="cVagas" hidden></span></button>
+  <button data-p="candidaturas"><span class="ic">📋</span>Candidaturas<span class="cont alerta" id="cLemb" hidden></span></button>
+  <button data-p="empresas"><span class="ic">🏢</span>Empresas que contratam</button>
+  <button data-p="caminhos"><span class="ic">🛂</span>Caminhos de visto</button>
+  <button data-p="golpe"><span class="ic">🛡️</span>Verificar oferta</button>
+  <button data-p="perfil"><span class="ic">👤</span>Meu perfil<span class="cont" id="cPerfil" hidden></span></button>
+  <button data-p="ajuda"><span class="ic">❔</span>Ajuda</button>
+ </nav>
+ <div class="rodape-lado">
+  <button class="btn-busca" id="btnColetar">🔎 Buscar vagas agora</button>
+  <div class="info" id="ultimaBusca">—</div>
+  <button class="tema" id="btnTema">🌙 Tema escuro</button>
+ </div>
+</aside>
+
+<main id="principal">
+<div class="topo"><div><h1 id="titulo">Início</h1><div class="subt" id="subtitulo"></div></div></div>
+
+<!-- INÍCIO -->
+<section class="pagina ativa" id="p-inicio">
+ <div id="avisoPerfil"></div>
+ <div class="grade g4 mt" id="kpis"></div>
+ <div class="card mt" id="painelBusca" hidden><h2>🔎 Buscando vagas…</h2><div class="rot">Pode continuar usando o RotaNorte enquanto isso.</div><div class="log" id="log"></div></div>
+ <div class="grade g2 mt">
+  <div class="card"><h2>⭐ Melhores vagas para você agora</h2><div id="topVagas"></div></div>
+  <div class="card"><h2>⏰ Para hoje</h2><div id="lembretes"></div></div>
+ </div>
+ <div class="grade g3 mt">
+  <div class="card"><h2>🌎 Vagas por país</h2><div class="esq" style="gap:18px" id="graPais"></div></div>
+  <div class="card"><h2>🧰 Vagas por área</h2><div id="graArea"></div></div>
+  <div class="card"><h2>📍 Onde há mais vagas</h2><div id="graLocal"></div></div>
+ </div>
+ <div class="grade g2 mt">
+  <div class="card"><h2>🗺️ Seu plano de ação</h2><div id="plano"></div></div>
+  <div class="card"><h2>📰 Mudanças recentes nas regras</h2><div id="alertas"></div></div>
+ </div>
+</section>
+
+<!-- VAGAS -->
+<section class="pagina" id="p-vagas">
+ <div class="filtros">
+  <div class="chips" id="fPais"><button class="chip ativo" data-v="">Todos</button><button class="chip" data-v="US">🇺🇸 EUA</button><button class="chip" data-v="CA">🇨🇦 Canadá</button></div>
+  <select id="fCat"><option value="">Todas as áreas</option></select>
+  <select id="fEst"><option value="1">✔ Aceitam estrangeiros</option><option value="2">Sem recusa explícita</option><option value="">Todas</option></select>
+  <label class="rot esq">Nota ≥ <input id="fMin" type="range" min="0" max="90" step="5" value="40" style="width:110px;padding:0"><b id="fMinV">40</b></label>
+  <select id="fOrdem"><option value="score">Melhor nota</option><option value="data">Mais recentes</option><option value="salario">Maior salário</option></select>
+  <input id="fBusca" placeholder="🔍 Cidade, empresa, cargo…" style="flex:1;min-width:180px">
+  <button class="btn sec peq" id="btnCsv" title="Baixar planilha">⬇ Planilha</button>
+ </div>
+ <div class="rot" id="contVagas" style="margin-bottom:8px"></div>
+ <div class="mestre">
+  <div><div class="lista" id="listaVagas"></div><div style="text-align:center;margin:12px"><button class="btn sec" id="maisVagas" hidden>Carregar mais</button></div></div>
+  <div class="card detalhe" id="detalhe"><div class="vazio"><div class="e">👈</div>Escolha uma vaga para ver os detalhes, gerar currículo e se candidatar.</div></div>
+ </div>
+</section>
+
+<!-- CANDIDATURAS -->
+<section class="pagina" id="p-candidaturas">
+ <div class="rot" style="margin-bottom:10px">Arraste os cartões entre as colunas. Ao marcar “Enviei”, o RotaNorte cria um lembrete para cobrar resposta em 7 dias.</div>
+ <div class="kanban" id="kanban"></div>
+</section>
+
+<!-- EMPRESAS -->
+<section class="pagina" id="p-empresas">
+ <div class="chips" id="abasEmp">
+  <button class="chip ativo" data-a="lmia">🇨🇦 LMIA aprovado</button>
+  <button class="chip" data-a="aip">🍁 Atlântico (AIP) · residência permanente</button>
+  <button class="chip" data-a="perm">🇺🇸 Green card (PERM)</button>
+ </div>
+ <div class="mt" id="emp-lmia">
+  <div class="aviso">Lista <b>oficial</b> do governo do Canadá: empresas que tiveram <b>LMIA aprovado</b> (autorização para contratar estrangeiros) na sua área no último ano. Não são vagas abertas – são as empresas com mais chance de contratar você. 🍁 = também é designada no AIP.</div>
+  <div class="filtros mt"><select id="eReg"><option value="">Todas as províncias</option></select><select id="eCat"><option value="">Todas as áreas</option></select>
+   <input id="eBusca" placeholder="🔍 Empresa, cidade, ocupação" style="flex:1;min-width:200px"></div>
+  <div class="rot" id="contEmp" style="margin-bottom:8px"></div>
+  <div class="card" style="padding:0;overflow:auto;max-height:calc(100vh - 300px)"><table><thead><tr><th>Empresa</th><th>Província</th><th>Ocupação aprovada</th><th>Vagas</th><th>Período</th><th></th></tr></thead><tbody id="listaEmp"></tbody></table></div>
+ </div>
+ <div class="mt" id="emp-aip" hidden>
+  <div class="aviso">🍁 <b>Atlantic Immigration Program</b>: uma oferta de emprego de empregador <b>designado</b> em New Brunswick, Nova Escócia, Ilha do Príncipe Eduardo ou Terra Nova e Labrador pode levar <b>direto à residência permanente</b> da família, sem LMIA. A lista não quer dizer que a empresa está contratando agora – procure as vagas dela.</div>
+  <div class="grade g4 mt" id="aipResumo"></div>
+  <div class="filtros mt"><div class="chips" id="aipProv"></div><label class="rot esq"><input type="checkbox" id="aipOficios"> só com ocupações de ofícios/indústria (NL)</label>
+   <input id="aipBusca" placeholder="🔍 Empresa ou cidade" style="flex:1;min-width:200px"></div>
+  <div class="card" style="padding:0;overflow:auto;max-height:calc(100vh - 380px)"><table><thead><tr><th>Empresa</th><th>Província</th><th>Local</th><th>Ocupações (NOC)</th><th></th></tr></thead><tbody id="listaAip"></tbody></table></div>
+  <div class="card mt"><h2>🗺️ Programas das províncias (conferido em 12/11/2026)</h2><div class="grade g2" id="programasProv"></div></div>
+ </div>
+ <div class="mt" id="emp-perm" hidden>
+  <div class="aviso">🇺🇸 Empresas que tiveram <b>green card de funcionário estrangeiro aprovado</b> pelo Departamento do Trabalho (processo PERM → EB-3/EB-2) nas suas áreas. São as que <b>já patrocinaram</b> antes. O processo é longo (anos) e o custo do PERM é do empregador. Dica: soldador com 2+ anos de experiência entra na fila “Skilled”, mais curta.</div>
+  <div class="filtros mt"><select id="pmEst"><option value="">Todos os estados</option></select><select id="pmCat"><option value="">Todas as áreas</option></select>
+   <input id="pmBusca" placeholder="🔍 Empresa, cargo, cidade" style="flex:1;min-width:200px"><button class="btn sec peq" id="pmAtualizar" title="Baixa o arquivo oficial mais recente (~150 MB)">↻ Atualizar dados</button></div>
+  <div class="rot" id="contPerm" style="margin-bottom:8px"></div>
+  <div class="card" style="padding:0;overflow:auto;max-height:calc(100vh - 330px)"><table><thead><tr><th>Empresa</th><th>Cargo / ocupação</th><th>Green cards aprovados</th><th>Salário oferecido</th><th>Onde</th><th>Última aprovação</th><th></th></tr></thead><tbody id="listaPerm"></tbody></table></div>
+ </div>
+</section>
+
+<!-- CAMINHOS -->
+<section class="pagina" id="p-caminhos">
+ <div class="aviso" id="verifEm"></div>
+ <div class="chips mt" id="resumoVias"></div>
+ <div id="listaCaminhos" class="mt"></div>
+ <div class="card mt"><h2>🔗 Onde conferir (sites oficiais)</h2><div class="grade g3" id="ondeConferir"></div></div>
+</section>
+
+<!-- GOLPE -->
+<section class="pagina" id="p-golpe">
+ <div class="grade g2">
+  <div class="card"><h2>🛡️ Recebeu uma proposta? Cole aqui antes de responder</h2>
+   <p class="rot" style="margin-top:0">Funciona com mensagens de WhatsApp, e-mails, posts e anúncios. A análise é feita no seu computador.</p>
+   <textarea id="txtGolpe" style="min-height:200px" placeholder="Cole aqui o texto completo da oferta…"></textarea>
+   <div class="esq mt"><button class="btn" id="btnGolpe">Analisar</button><button class="btn sec" id="btnAddManual">Salvar para acompanhar</button></div>
+   <div id="resGolpe" class="mt"></div>
+  </div>
+  <div class="card"><h2>📌 Regras que valem sempre</h2>
+   <div class="passo"><span>💸</span><div><b>Vaga real não se compra.</b><div class="rot">No Canadá é crime cobrar do trabalhador por LMIA ou oferta. No H-2B dos EUA o trabalhador não paga recrutamento e o empregador reembolsa visto e passagem.</div></div></div>
+   <div class="passo"><span>🔎</span><div><b>Confira na fonte.</b><div class="rot">Empresa no site oficial dela; caso H-2B no SeasonalJobs.dol.gov; vaga canadense no Job Bank.</div></div></div>
+   <div class="passo"><span>🪪</span><div><b>Consultor tem registro.</b><div class="rot">No Canadá, precisa estar no CICC. Nos EUA, veja a lista de recrutadores do Departamento do Trabalho.</div></div></div>
+   <div class="passo"><span>⏳</span><div><b>Desconfie de pressa.</b><div class="rot">“Últimas vagas”, contato só por WhatsApp e pedido de passaporte/dados bancários cedo demais são sinais clássicos.</div></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- PERFIL -->
+<section class="pagina" id="p-perfil">
+ <div class="card"><div class="esq" style="justify-content:space-between"><h2 style="margin:0">Perfil completo: <span id="pctPerfil">0%</span></h2><span class="rot" id="faltaPerfil"></span></div><div class="medidor mt"><i id="barPerfil" style="width:0"></i></div></div>
+ <div class="card mt"><h2>👤 Você e sua família</h2>
+  <div class="grade g4">
+   <label class="campo">Nome completo<input id="pNome"></label>
+   <label class="campo">E-mail<input id="pEmail" type="email"></label>
+   <label class="campo">Telefone (com +55)<input id="pTel"></label>
+   <label class="campo">Cidade<input id="pCidade"></label>
+   <label class="campo">Estado (UF)<input id="pUF" maxlength="2"></label>
+   <label class="campo">Cidadania<input id="pPais"></label>
+   <label class="campo">Idade<input id="pIdade" type="number"></label>
+   <label class="campo">Estado civil<select id="pCivil"><option value="solteiro">Solteiro(a)</option><option value="casado">Casado(a)</option><option value="uniao_estavel">União estável</option></select></label>
+   <label class="campo">Nº de filhos<input id="pFilhos" type="number" min="0"></label>
+   <label class="campo">Idades dos filhos (ex: 3, 7, 10)<input id="pIdadesF"></label>
+   <label class="campo">Profissão do cônjuge<input id="pConjProf"></label>
+   <label class="campo">Inglês do cônjuge<select id="pConjIng"><option value="nao_informado">Não informado</option><option value="nenhum">Nenhum</option><option value="basico">Básico</option><option value="intermediario">Intermediário</option><option value="avancado">Avançado</option></select></label>
+  </div></div>
+ <div class="card mt"><h2>🎓 Idiomas e estudo</h2>
+  <div class="grade g4">
+   <label class="campo">Seu inglês<select id="pIngles"><option value="nao_informado">Não informado</option><option value="nenhum">Nenhum</option><option value="basico">Básico</option><option value="intermediario">Intermediário</option><option value="avancado">Avançado</option><option value="fluente">Fluente</option></select></label>
+   <label class="campo">Teste de inglês feito<input id="pTeste" placeholder="IELTS, CELPIP, PTE…"></label>
+   <label class="campo">Escolaridade<select id="pEsc"><option value="fundamental">Fundamental</option><option value="medio">Ensino médio</option><option value="tecnico">Técnico</option><option value="superior_cursando">Superior (cursando)</option><option value="superior_completo">Superior completo</option><option value="pos">Pós-graduação</option></select></label>
+   <label class="campo">Curso superior<input id="pCurso"></label>
+   <label class="campo">Previsão de conclusão<input id="pPrev" placeholder="ex: 2028"></label>
+  </div></div>
+ <div class="card mt"><h2>🔧 Experiências de trabalho</h2>
+  <p class="rot" style="margin-top:0">Seja honesto: o currículo usa estes dados. “Anos” aceita decimal (ex: 1.5). Experiência com carteira assinada ou carta de referência vale mais.</p>
+  <div id="exps"></div><button class="btn sec peq" id="addExp">+ Adicionar experiência</button></div>
+ <div class="card mt"><h2>📜 Cursos e certificações</h2><div id="cursos"></div><button class="btn sec peq" id="addCurso">+ Adicionar curso</button></div>
+ <div class="card mt"><h2>💰 Situação</h2><div class="grade g4">
+   <label class="campo">Renda mensal (R$)<input id="pRenda" type="number"></label>
+   <label class="campo">Reserva p/ mudança (R$)<input id="pReserva" type="number"></label>
+   <label class="campo">Passaportes da família<select id="pPass"><option value="">Não sei</option><option value="true">Todos válidos</option><option value="false">Ainda não</option></select></label>
+   <label class="campo">Nota mínima de “boa vaga”<input id="pMin" type="number" min="0" max="100"></label>
+ </div></div>
+ <div class="card mt"><h2>📱 Avisos no celular (Telegram)</h2>
+  <p class="rot" style="margin-top:0">Receba no celular as vagas novas com nota alta e os lembretes. Grátis. Passo a passo: <b>1)</b> no Telegram, procure <b>@BotFather</b>, envie <code>/newbot</code> e escolha um nome; <b>2)</b> copie o token que ele mandar e cole abaixo; <b>3)</b> abra o seu bot e mande “oi”; <b>4)</b> clique em “Descobrir meu chat” e depois em “Enviar teste”.</p>
+  <div class="grade g4"><label class="campo">Token do bot<input id="tgToken" placeholder="123456789:ABC…"></label><label class="campo">Chat ID<input id="tgChat"></label>
+   <label class="campo">Avisar vagas com nota ≥<input id="tgNota" type="number" min="0" max="100"></label><label class="campo">Ativado<select id="tgAtivo"><option value="false">Não</option><option value="true">Sim</option></select></label></div>
+  <div class="esq mt"><button class="btn sec peq" id="tgDescobrir">🔎 Descobrir meu chat</button><button class="btn sec peq" id="tgTeste">📨 Enviar teste</button><span class="rot" id="tgMsg"></span></div>
+ </div>
+ <div class="card mt"><h2>⚙️ Busca</h2>
+  <label class="campo">Termos pesquisados no Job Bank (Canadá) – um por linha, em inglês<textarea id="fTermos"></textarea></label>
+  <details class="mt"><summary class="rot" style="cursor:pointer">Opcional: chave Adzuna (agregador privado EUA/Canadá)</summary>
+   <p class="rot">Crie grátis em developer.adzuna.com. Vagas privadas só ganham selo verde quando o texto fala em patrocínio de visto.</p>
+   <div class="grade g4"><label class="campo">app_id<input id="aId"></label><label class="campo">app_key<input id="aKey"></label>
+   <label class="campo">Ativar<select id="aAtivo"><option value="false">Não</option><option value="true">Sim</option></select></label></div></details>
+ </div>
+ <div class="mt" style="position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:16px 0"><button class="btn" id="btnSalvarPerfil">💾 Salvar e recalcular notas</button></div>
+</section>
+
+<!-- AJUDA -->
+<section class="pagina" id="p-ajuda">
+ <div class="grade g2">
+ <div class="card"><h2>🧭 Como o RotaNorte funciona</h2>
+  <div class="passo"><span>1</span><div><b>Busca vagas em fontes oficiais</b><div class="rot">Feed diário H-2B do Departamento do Trabalho dos EUA, Job Bank do Canadá (o sistema abre cada anúncio e confere se aceita estrangeiros) e a lista oficial de empresas com LMIA aprovado.</div></div></div>
+  <div class="passo"><span>2</span><div><b>Dá uma nota de 0 a 100</b><div class="rot">Área da sua experiência, se aceita estrangeiro, se a família pode trabalhar/estudar, salário, moradia e caminho para residência.</div></div></div>
+  <div class="passo"><span>3</span><div><b>Prepara a candidatura</b><div class="rot">Currículo e carta em inglês, e-mail pronto para enviar pelo Gmail.</div></div></div>
+  <div class="passo"><span>4</span><div><b>Acompanha e lembra</b><div class="rot">Quadro de candidaturas com lembretes para cobrar resposta.</div></div></div>
+ </div>
+ <div class="card"><h2>💡 Dicas</h2>
+  <div class="passo"><span>⏰</span><div><b>Busca automática todo dia</b><div class="rot">Dê dois cliques em <code>AGENDAR_BUSCA_DIARIA.bat</code> (o PC precisa estar ligado às 8h).</div></div></div>
+  <div class="passo"><span>🖥️</span><div><b>Atalho na Área de Trabalho</b><div class="rot">Rode <code>CRIAR_ATALHO.bat</code> uma vez.</div></div></div>
+  <div class="passo"><span>🤝</span><div><b>Passar para outra pessoa</b><div class="rot">Copie a pasta, apague <code>dados</code> e <code>config/perfil.json</code> da cópia.</div></div></div>
+  <div class="passo"><span>🔒</span><div><b>Privacidade</b><div class="rot">Tudo fica no seu computador. O painel só aceita acesso do próprio PC.</div></div></div>
+  <div class="passo"><span>⚖️</span><div><b>Importante</b><div class="rot">Informação, não aconselhamento jurídico. O RotaNorte não envia candidaturas sozinho nem garante visto.</div></div></div>
+ </div></div>
+</section>
+</main>
+
+<div class="fundo" id="fundo"><div class="modal" id="modal"></div></div>
+<div id="toasts"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const api=async(u,d)=>{const r=await fetch(u,d===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(!r.ok)throw new Error(j.erro||r.status);return j};
+const guardar={ler(k,p){try{const v=localStorage.getItem("rn_"+k);return v===null?p:JSON.parse(v)}catch{return p}},gravar(k,v){try{localStorage.setItem("rn_"+k,JSON.stringify(v))}catch{}}};
+const brl=v=>v?("R$ "+Math.round(v).toLocaleString("pt-BR")):"";
+const dataBR=s=>s?s.slice(0,10).split("-").reverse().join("/"):"";
+const PAIS={US:"🇺🇸 EUA",CA:"🇨🇦 Canadá"};
+const STATUS=[["","—"],["interesse","⭐ Interesse"],["aplicado","📨 Enviei"],["entrevista","🗣 Entrevista"],["oferta","🎉 Oferta"],["recusado","✖ Não deu"],["descartado","🗑 Descartar"]];
+const COLUNAS=[["interesse","⭐ Tenho interesse"],["aplicado","📨 Enviei"],["entrevista","🗣 Entrevista"],["oferta","🎉 Oferta"],["recusado","✖ Não deu certo"]];
+let RES={},PERFIL={},FONTES={},CATS={},VAGAS=[],SEL=null,OFFSET=0;
+const VISITA_ANT=guardar.ler("ultima_visita",null);
+addEventListener("beforeunload",()=>guardar.gravar("ultima_visita",new Date().toISOString().slice(0,19)));
+
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>t.remove(),3500)}
+function modal(html){$("#modal").innerHTML=html;$("#fundo").classList.add("aberto")}
+function fecharModal(){$("#fundo").classList.remove("aberto")}
+$("#fundo").onclick=e=>{if(e.target.id==="fundo")fecharModal()};
+addEventListener("keydown",e=>{if(e.key==="Escape"){fecharModal();$("#detalhe").classList.remove("aberto")}});
+// Links externos abrem no navegador normal do PC (onde você já está logado, ex.: Gmail)
+async function abrirFora(url){try{await api("/api/abrir",{url})}catch{window.open(url,"_blank")}}
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-fora]");if(a){e.preventDefault();abrirFora(a.href)}});
+function abrirDoc(u){window.open(u,"_blank","width=980,height=1000")}
+async function copiar(t){try{await navigator.clipboard.writeText(t)}catch{const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();document.execCommand("copy");x.remove()}toast("Copiado ✔")}
+
+// ---------------------------------------------------------------- tema e navegação
+function aplicarTema(t){document.documentElement.dataset.tema=t;$("#btnTema").textContent=t==="escuro"?"☀️ Tema claro":"🌙 Tema escuro"}
+aplicarTema(guardar.ler("tema",matchMedia("(prefers-color-scheme: dark)").matches?"escuro":"claro"));
+$("#btnTema").onclick=()=>{const t=document.documentElement.dataset.tema==="escuro"?"claro":"escuro";aplicarTema(t);guardar.gravar("tema",t)};
+const TITULOS={inicio:["Início","Resumo da sua busca"],vagas:["Vagas","Oportunidades reais de empregadores que contratam estrangeiros"],candidaturas:["Candidaturas","Acompanhe cada vaga até a resposta"],empresas:["Empresas que contratam estrangeiros","Listas oficiais do Canadá e dos EUA"],caminhos:["Caminhos de visto","O que faz sentido para você e sua família"],golpe:["Verificar oferta","Proteja-se antes de responder"],perfil:["Meu perfil","Quanto mais completo, melhores as notas e o currículo"],ajuda:["Ajuda",""]};
+$$("#menu button").forEach(b=>b.onclick=()=>ir(b.dataset.p));
+function ir(p){$$("#menu button").forEach(x=>x.classList.toggle("ativo",x.dataset.p===p));$$(".pagina").forEach(x=>x.classList.toggle("ativa",x.id==="p-"+p));
+ $("#titulo").textContent=TITULOS[p][0];$("#subtitulo").textContent=TITULOS[p][1];$("#principal").scrollTop=0;
+ ({inicio:carregarInicio,vagas:()=>carregarVagas(true),empresas:carregarEmp,caminhos:carregarCaminhos,candidaturas:carregarKanban,perfil:carregarPerfil})[p]?.()}
+
+// ---------------------------------------------------------------- base
+function completude(p){const itens=[[!!p.nome,"nome"],[!!p.email,"e-mail"],[!!p.telefone,"telefone"],[!!p.cidade,"cidade"],[p.ingles&&p.ingles!=="nao_informado","inglês"],
+ [(p.experiencias||[]).length>0&&(p.experiencias||[]).every(e=>e.anos!==null&&e.anos!==""),"anos de experiência"],[(p.experiencias||[]).every(e=>!!e.empresa),"empresas onde trabalhou"],
+ [(p.filhos||[]).every(f=>f.idade!==null&&f.idade!==undefined),"idades dos filhos"],[p.passaportes_familia_ok!==null,"passaportes"]];
+ const ok=itens.filter(i=>i[0]).length;return{pct:Math.round(ok/itens.length*100),falta:itens.filter(i=>!i[0]).map(i=>i[1])}}
+async function base(){RES=await api("/api/resumo");CATS=RES.categorias;PERFIL=await api("/api/perfil");
+ $("#ultimaBusca").textContent=RES.ultima_busca?"Última busca: "+dataBR(RES.ultima_busca)+" "+RES.ultima_busca.slice(11,16):"Nenhuma busca ainda";
+ const c=completude(PERFIL);$("#cPerfil").hidden=c.pct===100;$("#cPerfil").textContent=c.pct+"%";
+ if(RES.coleta.rodando)acompanhar();
+ const opts='<option value="">Todas as áreas</option>'+Object.entries(CATS).map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join("");
+ if($("#fCat").options.length<2){$("#fCat").innerHTML=opts;$("#eCat").innerHTML=opts;$("#fMin").value=PERFIL.preferencias?.score_minimo??40;$("#fMinV").textContent=$("#fMin").value}}
+
+// ---------------------------------------------------------------- INÍCIO
+async function carregarInicio(){await base();const est=await api("/api/estatisticas");
+ const novas=VISITA_ANT?(await api("/api/vagas?"+new URLSearchParams({desde:VISITA_ANT,so_estrangeiro:1,min:0,limite:2000}))).length:RES.novas_hoje;
+ $("#cVagas").hidden=!novas;$("#cVagas").textContent=novas;
+ const c=completude(PERFIL);
+ $("#avisoPerfil").innerHTML=c.pct<100?`<div class="aviso">👤 Seu perfil está <b>${c.pct}%</b> completo. Falta: ${c.falta.join(", ")}. <a href="#" onclick="ir('perfil');return false">Completar agora →</a></div>`:"";
+ const cand=Object.fromEntries(est.pipeline);
+ $("#kpis").innerHTML=[["⭐","i-verde",RES.vagas_boas,"vagas boas para você","vagas"],["✅","i-azul",RES.vagas_estrangeiro,"aceitam estrangeiros","vagas"],
+  ["🆕","i-roxo",novas,VISITA_ANT?"novas desde sua última visita":"novas hoje","vagas"],["🏢","i-amar",RES.empregadores.toLocaleString("pt-BR"),"empresas com LMIA","empresas"],
+  ["📨","i-azul",(cand.aplicado||0)+(cand.entrevista||0)+(cand.oferta||0),"candidaturas enviadas","candidaturas"]]
+  .map(([i,c,n,t,p])=>`<div class="card kpi" onclick="ir('${p}')"><div class="ico ${c}">${i}</div><div><div class="n">${n??0}</div><div class="r">${t}</div></div></div>`).join("");
+ const top=await api("/api/vagas?"+new URLSearchParams({so_estrangeiro:1,min:0,limite:6}));
+ $("#topVagas").innerHTML=top.length?top.map(v=>itemVaga(v,true)).join(""):vazio("🔎","Nenhuma vaga ainda. Clique em “Buscar vagas agora”.");
+ $("#cLemb").hidden=!est.lembretes.length;$("#cLemb").textContent=est.lembretes.length;
+ $("#lembretes").innerHTML=est.lembretes.length?est.lembretes.map(l=>`<div class="passo" style="cursor:pointer" onclick="abrirVagaModal('${esc(l.id)}')"><span>📌</span><div><b>Cobrar resposta: ${esc(l.titulo)}</b><div class="rot">${esc(l.empresa)} · ${PAIS[l.pais]||""} · lembrete ${dataBR(l.lembrete)}</div></div></div>`).join("")
+  :vazio("✅","Nada pendente hoje. Quando você marcar uma vaga como “Enviei”, o lembrete aparece aqui em 7 dias.");
+ // gráficos
+ const cores=["#3b82f6","#22c55e","#f59e0b","#a855f7"];const tot=est.por_pais.reduce((a,b)=>a+b[1],0)||1;let acc=0;
+ const fatias=est.por_pais.map((p,i)=>{const ini=acc;acc+=p[1]/tot*100;return`${cores[i]} ${ini}% ${acc}%`}).join(",");
+ $("#graPais").innerHTML=est.por_pais.length?`<div class="rosca" style="background:radial-gradient(closest-side,var(--sup) 58%,transparent 60%),conic-gradient(${fatias})"></div><div class="leg">${est.por_pais.map((p,i)=>`<div><span style="background:${cores[i]}"></span>${PAIS[p[0]]||p[0]}: <b>${p[1]}</b></div>`).join("")}${est.salario_medio.map(s=>`<div class="rot">Média ${s[0]}: ${s[0]==="US"?"US$":"CA$"} ${s[1]}/h</div>`).join("")}</div>`:vazio("📊","Sem dados");
+ const barras=(lista,nome)=>{const max=Math.max(1,...lista.map(x=>x[1]));return lista.length?lista.map(x=>`<div class="barra"><div class="nm" title="${esc(nome(x[0]))}">${esc(nome(x[0]))}</div><div class="t"><i style="width:${x[1]/max*100}%"></i></div><b>${x[1]}</b></div>`).join(""):vazio("📊","Sem dados")};
+ $("#graArea").innerHTML=barras(est.por_area.slice(0,7),k=>CATS[k]||"Outra");$("#graLocal").innerHTML=barras(est.por_estado,k=>k);
+ const cam=await api("/api/caminhos");const feitos=guardar.ler("plano_feito",{});
+ $("#plano").innerHTML=cam.plano.map((p,i)=>{const f=feitos[p.titulo]??(p.feito===true);return`<div class="passo ${f?"feito":""}"><input type="checkbox" ${f?"checked":""} onchange="marcarPlano(this,'${esc(p.titulo).replace(/'/g,"")}')"><div class="prazo">${esc(p.prazo)}</div><div><b class="tt">${esc(p.titulo)}</b><div class="rot">${esc(p.detalhe)}</div></div></div>`}).join("");
+ $("#alertas").innerHTML=cam.alertas.map(a=>`<div class="passo"><div class="prazo">${dataBR(a.data)}<br><span class="selo s-pri">${esc(a.pais)}</span></div><div class="rot" style="color:var(--txt)">${esc(a.texto)} <a data-fora href="${esc(a.link)}">fonte oficial ↗</a></div></div>`).join("")}
+function marcarPlano(el,t){const f=guardar.ler("plano_feito",{});f[t]=el.checked;guardar.gravar("plano_feito",f);el.closest(".passo").classList.toggle("feito",el.checked)}
+const vazio=(e,t)=>`<div class="vazio"><div class="e">${e}</div>${t}</div>`;
+
+// ---------------------------------------------------------------- busca
+$("#btnColetar").onclick=async()=>{const r=await api("/api/coletar",{});if(!r.ok)toast(r.mensagem);acompanhar();ir("inicio")};
+let timer=null;
+function acompanhar(){$("#btnColetar").disabled=true;$("#btnColetar").textContent="⏳ Buscando…";$("#painelBusca").hidden=false;
+ clearInterval(timer);timer=setInterval(async()=>{const e=await api("/api/coleta/estado");$("#log").textContent=e.log.join("\n");$("#log").scrollTop=1e9;
+  if(!e.rodando){clearInterval(timer);$("#btnColetar").disabled=false;$("#btnColetar").textContent="🔎 Buscar vagas agora";$("#painelBusca").hidden=true;toast("Busca concluída ✔");carregarInicio()}},1500)}
+
+// ---------------------------------------------------------------- VAGAS
+const corNota=n=>n>=60?"var(--ok)":n>=40?"#d97706":"#94a3b8";
+function selos(v,curto){const s=[];const ex=v.extras||{};
+ if(VISITA_ANT&&v.primeira_vez>VISITA_ANT)s.push('<span class="selo novo">NOVA</span>');
+ if(v.aceita_estrangeiro===1)s.push('<span class="selo s-ok">✔ aceita estrangeiro</span>');else if(v.aceita_estrangeiro===0)s.push('<span class="selo s-er">✖ só locais</span>');else if(!curto)s.push('<span class="selo s-cz">? confirmar</span>');
+ if((ex.paises_recrutamento||[]).some(p=>/bra[sz]il/i.test(p)))s.push('<span class="selo s-ok">🇧🇷 recruta no Brasil</span>');
+ if(ex.aip)s.push(`<span class="selo s-ok">🍁 AIP ${esc(ex.aip)} · residência</span>`);
+ if(ex.moradia)s.push('<span class="selo s-pri">🏠 moradia</span>');
+ if(ex.exp_min_meses===0)s.push('<span class="selo s-pri">sem experiência mínima</span>');
+ if(v.lmia)s.push(`<span class="selo s-pri">LMIA ${esc(v.lmia)}</span>`);
+ if(v.risco_golpe>=20)s.push('<span class="selo s-er">⚠ golpe?</span>');
+ if(v.status)s.push(`<span class="selo s-at">${esc((STATUS.find(x=>x[0]===v.status)||[])[1]||v.status)}</span>`);
+ return s.join("")}
+function itemVaga(v,compacto){const local=[v.cidade,v.estado].filter(Boolean).join(", ");
+ return`<div class="item ${SEL===v.id?"sel":""}" data-id="${esc(v.id)}" onclick="${compacto?`abrirVagaModal('${esc(v.id)}')`:`selecionar('${esc(v.id)}')`}">
+ <div class="anel" style="--v:${v.score||0};--c:${corNota(v.score)}">${v.score??"–"}</div>
+ <div class="corpo"><h3 class="linha">${esc(cap(v.titulo))}</h3><div class="m linha">${PAIS[v.pais]||""} · <b>${esc(v.empresa||"Empresa não informada")}</b>${local?" · "+esc(local):""}</div>
+ <div class="m">${v.salario_txt?"💵 "+esc(v.salario_txt):""}${v.salario_mes_brl?` <span class="dinheiro">≈ ${brl(v.salario_mes_brl)}/mês</span>`:""}</div><div>${selos(v,true)}</div></div></div>`}
+const cap=t=>String(t||"").replace(/(^|\s)\S/g,c=>c.toUpperCase());
+function filtrosVagas(){return{pais:$("#fPais .ativo").dataset.v,cat:$("#fCat").value,so_estrangeiro:$("#fEst").value,min:$("#fMin").value,ordem:$("#fOrdem").value,q:$("#fBusca").value}}
+async function carregarVagas(reset){if(reset){OFFSET=0;VAGAS=[];await base();$("#listaVagas").innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>'}
+ const lote=await api("/api/vagas?"+new URLSearchParams({...filtrosVagas(),limite:60,offset:OFFSET}));OFFSET+=lote.length;VAGAS=VAGAS.concat(lote);
+ $("#contVagas").textContent=`${VAGAS.length}${lote.length===60?"+":""} vaga(s) com estes filtros`;
+ $("#listaVagas").innerHTML=VAGAS.length?VAGAS.map(v=>itemVaga(v)).join(""):vazio("🔍","Nenhuma vaga com esses filtros. Baixe a nota mínima, troque o filtro de estrangeiros ou rode uma busca.");
+ $("#maisVagas").hidden=lote.length<60;
+ if(reset&&VAGAS.length&&innerWidth>1100)selecionar(VAGAS[0].id)}
+$("#maisVagas").onclick=()=>carregarVagas(false);
+$$("#fPais .chip").forEach(c=>c.onclick=()=>{$$("#fPais .chip").forEach(x=>x.classList.toggle("ativo",x===c));carregarVagas(true)});
+["#fCat","#fEst","#fOrdem"].forEach(s=>$(s).onchange=()=>carregarVagas(true));
+$("#fMin").oninput=()=>$("#fMinV").textContent=$("#fMin").value;$("#fMin").onchange=()=>carregarVagas(true);
+let tB;$("#fBusca").oninput=()=>{clearTimeout(tB);tB=setTimeout(()=>carregarVagas(true),350)};
+$("#btnCsv").onclick=()=>{location.href="/api/exportar.csv?"+new URLSearchParams(filtrosVagas())};
+
+async function selecionar(id){SEL=id;$$(".item").forEach(x=>x.classList.toggle("sel",x.dataset.id===id));
+ const v=await api("/api/vaga?id="+encodeURIComponent(id));$("#detalhe").innerHTML=htmlDetalhe(v);$("#detalhe").classList.add("aberto");$("#detalhe").scrollTop=0}
+async function abrirVagaModal(id){const v=await api("/api/vaga?id="+encodeURIComponent(id));modal(htmlDetalhe(v,true))}
+function htmlDetalhe(v,emModal){const local=[v.cidade,v.estado].filter(Boolean).join(", ");const id=esc(v.id);
+ const datas=v.data_inicio?`📅 Início ${dataBR(v.data_inicio)}${v.data_fim?" até "+dataBR(v.data_fim):""}`:"";
+ const trad="https://translate.google.com/?sl=en&tl=pt&op=translate&text="+encodeURIComponent((v.descricao||"").slice(0,4000));
+ return`<div class="esq" style="justify-content:space-between;margin-bottom:6px"><span class="rot">${esc(v.fonte)}</span>
+ <button class="btn fant peq fechar-det" style="display:${emModal?"inline-flex":"none"}" onclick="fecharModal();$('#detalhe').classList.remove('aberto')">✕ Fechar</button></div>
+ <div class="det-topo"><div class="anel g" style="--v:${v.score||0};--c:${corNota(v.score)}">${v.score??"–"}</div><div style="min-width:0">
+ <h2>${esc(cap(v.titulo))}</h2><div class="rot">${PAIS[v.pais]||""} · <b>${esc(v.empresa||"Empresa não informada")}</b>${local?" · "+esc(local):""}</div>
+ <div class="rot">${v.salario_txt?"💵 "+esc(v.salario_txt):""}${v.salario_mes_brl?` · <span class="dinheiro" title="Estimativa bruta: 40h/semana × cotação PTAX do Banco Central. Não desconta impostos nem custo de vida.">≈ ${brl(v.salario_mes_brl)}/mês*</span>`:""}</div>
+ <div class="rot">${esc(v.programa||"")}${datas?" · "+datas:""}${v.vagas_qtd?" · "+v.vagas_qtd+" vagas":""}</div><div style="margin-top:4px">${selos(v)}</div></div></div>
+ <div class="esq mt" style="flex-wrap:wrap"><a class="btn" data-fora href="${esc(v.url)}">Abrir anúncio oficial ↗</a>
+ <button class="btn sec" onclick="gerarPdf('${id}',this)">📄 Currículo PDF</button>
+ <button class="btn sec" onclick="abrirDoc('/doc/curriculo?id=${encodeURIComponent(v.id)}')">👁 Ver/editar currículo</button>
+ <button class="btn sec" onclick="abrirDoc('/doc/carta?id=${encodeURIComponent(v.id)}')">✉ Carta</button>
+ <button class="btn sec" onclick="emailVaga('${id}')">📧 E-mail pronto</button></div>
+ <div class="secao"><h4>Acompanhamento</h4><div class="status-seg">${STATUS.map(([k,t])=>`<button class="${(v.status||"")===k?"ativo":""}" onclick="mudarStatus('${id}','${k}',this)">${t}</button>`).join("")}</div>
+ <div class="grade mt" style="grid-template-columns:1fr 170px"><textarea style="min-height:60px" placeholder="Anotações (com quem falou, o que pediram…)" onchange="salvarCand('${id}',{notas:this.value})">${esc(v.notas||"")}</textarea>
+ <label class="campo">⏰ Lembrete<input type="date" value="${esc(v.lembrete||"")}" onchange="salvarCand('${id}',{lembrete:this.value})"></label></div></div>
+ <div class="secao"><h4>Por que esta nota</h4><ul class="motivos">${(v.motivos||[]).map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>
+ ${v.alertas_golpe&&v.alertas_golpe.length?`<div class="secao"><div class="aviso">⚠ ${v.alertas_golpe.map(esc).join("<br>⚠ ")}</div></div>`:""}
+ <div class="secao"><h4>Como se candidatar</h4><div class="desc" style="color:var(--txt)">${esc(v.como_aplicar||"Veja o anúncio oficial.")}</div></div>
+ ${v.descricao?`<div class="secao"><h4 class="esq" style="justify-content:space-between">Descrição <a class="btn fant peq" data-fora href="${trad}">🌐 Traduzir</a></h4><div class="desc">${esc(v.descricao)}</div></div>`:""}
+ <p class="rot mt">Publicada ${dataBR(v.data_publicacao)||"?"} · código ${esc(v.codigo_ocupacao||"-")}${v.salario_mes_brl?" · *estimativa bruta pela cotação oficial":""}</p>`}
+async function gerarPdf(id,btn){const t=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="⏳ Gerando…"}
+ try{const r=await api("/api/pdf",{id});window._ultimoPdf=r.arquivo;toast("PDF pronto: "+r.nome);await api("/api/abrir_pasta",{arquivo:r.arquivo});return r}
+ catch(e){toast("Não consegui gerar o PDF: "+e.message)}finally{if(btn){btn.disabled=false;btn.textContent=t}}}
+async function mudarStatus(id,st,btn){const r=await api("/api/candidatura",{vaga_id:id,status:st});
+ btn.parentNode.querySelectorAll("button").forEach(b=>b.classList.toggle("ativo",b===btn));
+ if(r.lembrete&&st==="aplicado"){const i=btn.closest(".secao").querySelector("input[type=date]");if(i)i.value=r.lembrete;toast("Marcado como enviado · lembrete em "+dataBR(r.lembrete))}else toast("Atualizado ✔");
+ const v=VAGAS.find(x=>x.id===id);if(v){v.status=st;const el=$(`.item[data-id="${CSS.escape(id)}"]`);if(el)el.outerHTML=itemVaga(v)}}
+async function salvarCand(id,dados){const v=await api("/api/vaga?id="+encodeURIComponent(id));await api("/api/candidatura",{vaga_id:id,status:v.status||"interesse",...dados});toast("Salvo ✔")}
+async function emailVaga(id){const e=await api("/api/email?id="+encodeURIComponent(id));
+ const gmail="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(e.para)+"&su="+encodeURIComponent(e.assunto)+"&body="+encodeURIComponent(e.corpo);
+ const mailto="mailto:"+encodeURIComponent(e.para)+"?subject="+encodeURIComponent(e.assunto)+"&body="+encodeURIComponent(e.corpo);
+ modal(`<h2 style="margin-top:0">📧 E-mail pronto</h2><div class="aviso">📎 <b>Anexe o currículo:</b> clique em “Gerar PDF” – a pasta abre com o arquivo selecionado; arraste-o para o e-mail.</div>
+ <label class="campo">Para<input id="emPara" value="${esc(e.para)}" placeholder="E-mail do empregador (veja o anúncio)"></label>
+ <label class="campo mt">Assunto<input id="emAss" value="${esc(e.assunto)}"></label>
+ <label class="campo mt">Mensagem<textarea id="emCorpo" style="min-height:260px">${esc(e.corpo)}</textarea></label>
+ <div class="esq mt" style="flex-wrap:wrap"><button class="btn sec" onclick="gerarPdf(window._emailId,this)">📄 Gerar PDF</button><button class="btn" onclick="enviarEmail('gmail')">Abrir no Gmail ↗</button><button class="btn sec" onclick="enviarEmail('mailto')">Outro app de e-mail</button>
+ <button class="btn sec" onclick="copiar($('#emCorpo').value)">Copiar texto</button><button class="btn fant" onclick="fecharModal()">Fechar</button></div>`);
+ window._emailId=id}
+function enviarEmail(tipo){const p=$("#emPara").value,a=$("#emAss").value,c=$("#emCorpo").value;
+ const url=tipo==="gmail"?"https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(p)+"&su="+encodeURIComponent(a)+"&body="+encodeURIComponent(c):"mailto:"+encodeURIComponent(p)+"?subject="+encodeURIComponent(a)+"&body="+encodeURIComponent(c);
+ abrirFora(url);toast("Abrindo seu e-mail… depois marque a vaga como “Enviei”.")}
+
+// ---------------------------------------------------------------- CANDIDATURAS (kanban)
+async function carregarKanban(){await base();const lista=await api("/api/vagas?"+new URLSearchParams({status:"_com",so_estrangeiro:"",min:0,limite:2000}));const hoje=new Date().toISOString().slice(0,10);
+ $("#kanban").innerHTML=COLUNAS.map(([k,t])=>{const cs=lista.filter(v=>v.status===k);return`<div class="coluna" data-st="${k}"><h3><span>${t}</span><span class="selo s-cz">${cs.length}</span></h3>
+ ${cs.map(v=>`<div class="kcard" draggable="true" data-id="${esc(v.id)}" ondblclick="abrirVagaModal('${esc(v.id)}')"><b>${esc(cap(v.titulo))}</b><div class="m">${PAIS[v.pais]||""} · ${esc(v.empresa||"")}</div>
+ ${v.lembrete?`<div class="m" style="color:${v.lembrete<=hoje?"var(--er)":"var(--sub)"}">⏰ ${dataBR(v.lembrete)}</div>`:""}${v.aplicado_em?`<div class="m">📨 enviado ${dataBR(v.aplicado_em)}</div>`:""}
+ <div style="margin-top:6px"><button class="btn fant peq" onclick="abrirVagaModal('${esc(v.id)}')">Abrir</button></div></div>`).join("")||'<div class="rot" style="padding:8px">Arraste para cá</div>'}</div>`}).join("");
+ $$(".kcard").forEach(c=>c.ondragstart=e=>e.dataTransfer.setData("text/plain",c.dataset.id));
+ $$(".coluna").forEach(col=>{col.ondragover=e=>{e.preventDefault();col.classList.add("sobre")};col.ondragleave=()=>col.classList.remove("sobre");
+  col.ondrop=async e=>{e.preventDefault();col.classList.remove("sobre");const id=e.dataTransfer.getData("text/plain");await api("/api/candidatura",{vaga_id:id,status:col.dataset.st});toast("Movido ✔");carregarKanban()}});}
+
+// ---------------------------------------------------------------- EMPRESAS
+let tE,ABA_EMP="lmia";
+$$("#abasEmp .chip").forEach(c=>c.onclick=()=>{ABA_EMP=c.dataset.a;$$("#abasEmp .chip").forEach(x=>x.classList.toggle("ativo",x===c));
+ ["lmia","aip","perm"].forEach(a=>$("#emp-"+a).hidden=a!==ABA_EMP);carregarEmp()});
+async function carregarEmp(){await base();if(ABA_EMP==="aip")return carregarAip();if(ABA_EMP==="perm")return carregarPerm();
+ const r=await api("/api/empregadores?"+new URLSearchParams({regiao:$("#eReg").value,cat:$("#eCat").value,q:$("#eBusca").value}));
+ if($("#eReg").options.length<2)$("#eReg").innerHTML='<option value="">Todas as províncias</option>'+r.regioes.map(x=>`<option>${esc(x)}</option>`).join("");
+ $("#contEmp").textContent=`${r.itens.length}${r.itens.length>=1000?"+":""} registro(s)`;
+ $("#listaEmp").innerHTML=r.itens.length?r.itens.map(e=>`<tr><td><b>${esc(e.empresa)}</b>${e.aip?` <span class="selo s-ok">🍁 AIP ${esc(e.aip)}</span>`:""}<div class="rot">${esc(e.endereco)}</div></td><td>${esc(e.regiao)}</td><td>${esc(e.ocupacao)}<div class="rot">${esc(e.programa)}</div></td><td>${e.posicoes??""}</td><td>${esc(e.periodo)}</td>
+ <td style="white-space:nowrap"><a class="btn peq" data-fora href="https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=${encodeURIComponent(e.empresa)}">Vagas ↗</a>
+ <a class="btn sec peq" data-fora href="https://www.google.com/search?q=${encodeURIComponent('"'+e.empresa+'" careers jobs')}">Site ↗</a></td></tr>`).join(""):`<tr><td colspan="6">${vazio("🏢","Nenhuma empresa ainda. Rode a busca (a lista oficial é baixada junto).")}</td></tr>`}
+["#eReg","#eCat"].forEach(s=>$(s).onchange=carregarEmp);$("#eBusca").oninput=()=>{clearTimeout(tE);tE=setTimeout(carregarEmp,350)};
+const PROV={NL:"Terra Nova e Labrador",NS:"Nova Escócia",NB:"New Brunswick",PE:"Ilha do Príncipe Eduardo"};
+let AIP_PROV="";
+async function carregarAip(){const r=await api("/api/aip?"+new URLSearchParams({prov:AIP_PROV,q:$("#aipBusca").value,oficios:$("#aipOficios").checked?1:""}));
+ $("#aipResumo").innerHTML=Object.entries(PROV).map(([k,n])=>{const c=r.contagem[k];return`<div class="card kpi" onclick="${c?`AIP_PROV='${k}';carregarAip()`:`abrirFora('${r.links[k]}')`}"><div class="ico i-verde">🍁</div><div><div class="n">${c??"—"}</div><div class="r">${n}${c?"":" · ver lista oficial ↗"}</div></div></div>`}).join("");
+ $("#aipProv").innerHTML=[["","Todas"],...Object.entries(PROV).filter(([k])=>r.contagem[k])].map(([k,n])=>`<button class="chip ${AIP_PROV===k?"ativo":""}" onclick="AIP_PROV='${k}';carregarAip()">${esc(n)}</button>`).join("");
+ $("#listaAip").innerHTML=r.itens.length?r.itens.map(e=>`<tr><td><b>${esc(e.empresa)}</b></td><td>${esc(PROV[e.provincia]||e.provincia)}</td><td>${esc(e.local||"")}</td><td>${esc(e.noc||"—")}</td>
+ <td style="white-space:nowrap"><a class="btn peq" data-fora href="https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=${encodeURIComponent(e.empresa.split(/ o\/a /i).pop())}">Vagas ↗</a>
+ <a class="btn sec peq" data-fora href="https://www.google.com/search?q=${encodeURIComponent('"'+e.empresa.split(/ o\/a /i).pop()+'" careers')}">Site ↗</a></td></tr>`).join("")
+  :`<tr><td colspan="5">${vazio("🍁","Lista ainda não baixada. Clique em “Buscar vagas agora”.")}</td></tr>`;
+ if(r.vagas_cruzadas)toast(`${r.vagas_cruzadas} vaga(s) do Job Bank são de empregadores AIP – veja o selo 🍁 em Vagas`);
+ $("#programasProv").innerHTML=PROGRAMAS.map(p=>`<div class="passo"><span>${p.ic}</span><div><b>${esc(p.nome)}</b><div class="rot">${esc(p.txt)}</div><div class="esq" style="margin-top:6px;flex-wrap:wrap">${p.links.map(([n,u])=>`<a class="btn sec peq" data-fora href="${u}">${esc(n)} ↗</a>`).join("")}</div></div></div>`).join("")}
+$("#aipBusca").oninput=()=>{clearTimeout(tE);tE=setTimeout(carregarAip,350)};$("#aipOficios").onchange=carregarAip;
+const PROGRAMAS=[
+ {ic:"🦞",nome:"New Brunswick (AIP e NBPNP)",txt:"Desde fev/2026 a província restringe várias ocupações (sobretudo alimentação e varejo) e coloca os pedidos de AIP num banco de candidatos. Novas designações de empregadores estão pausadas até o fim de 2026 – foque nos que já são designados.",links:[["Lista oficial (PDF)","https://www.gnb.ca/content/dam/GNB3/t/fhc-fmc/immigration/docs/designated-employers-employeurs-designes.pdf"],["Imigração NB","https://www.welcomenb.ca/"]]},
+ {ic:"⚓",nome:"Nova Escócia (AIP e NSNP)",txt:"Usa sistema de manifestação de interesse para o AIP. Construção e ofícios estão entre as prioridades. A lista oficial de designados é baixada pelo RotaNorte.",links:[["Página oficial do AIP","https://liveinnovascotia.com/atlantic-immigration-program"]]},
+ {ic:"🏝️",nome:"Ilha do Príncipe Eduardo (AIP e PEI PNP)",txt:"Tem lista pública de empregadores designados (a leitura automática não é permitida pelo site – abra o link). Aplica limites por setor desde 2026.",links:[["Lista oficial","https://www.princeedwardisland.ca/en/information/office-of-immigration/atlantic-immigration-program-designated-employers"]]},
+ {ic:"🐋",nome:"Terra Nova e Labrador (AIP e NLPNP)",txt:"A lista oficial traz os códigos de ocupação (NOC) de cada empregador – use o filtro de ofícios para achar quem contrata na sua área.",links:[["Lista oficial","https://www.gov.nl.ca/immigration/designated-employers/"]]},
+ {ic:"🌾",nome:"Saskatchewan, Manitoba e Alberta",txt:"Programas provinciais (SINP, MPNP, AAIP) costumam ter vias para ofícios e para quem já trabalha na província com permissão de trabalho. Quase sempre exigem oferta de emprego local – as empresas com LMIA aprovado nessas províncias são bons alvos.",links:[["SINP","https://www.saskatchewan.ca/residents/moving-to-saskatchewan/live-in-saskatchewan/by-immigrating/saskatchewan-immigrant-nominee-program"],["MPNP","https://immigratemanitoba.com/"],["AAIP","https://www.alberta.ca/alberta-advantage-immigration-program"]]},
+ {ic:"🏘️",nome:"Piloto de comunidades rurais (RCIP)",txt:"Cidades pequenas participantes recomendam trabalhadores para residência permanente, com oferta de empregador designado pela comunidade.",links:[["Página oficial","https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/rural-franco-pilots/rural-immigration.html"]]},
+];
+let tP;
+async function carregarPerm(){const r=await api("/api/perm?"+new URLSearchParams({estado:$("#pmEst").value,cat:$("#pmCat").value,q:$("#pmBusca").value}));
+ if($("#pmCat").options.length<2)$("#pmCat").innerHTML=$("#eCat").innerHTML;
+ if($("#pmEst").options.length<2)$("#pmEst").innerHTML='<option value="">Todos os estados</option>'+r.estados.map(x=>`<option>${esc(x)}</option>`).join("");
+ $("#contPerm").textContent=r.empresas?`Dados oficiais ${r.periodo}: ${r.empresas.toLocaleString("pt-BR")} empresa(s), ${r.casos.toLocaleString("pt-BR")} green card(s) aprovados nas suas áreas · mostrando ${r.itens.length}`:"";
+ $("#listaPerm").innerHTML=r.itens.length?r.itens.map(e=>`<tr><td><b>${esc(e.empresa)}</b><div class="rot">${esc(e.cidade)}, ${esc(e.estado)}${e.funcionarios&&e.funcionarios!=="N/A"?" · "+esc(e.funcionarios)+" funcionários":""}</div></td>
+ <td>${esc(e.cargo)}<div class="rot">${esc(e.soc_titulo)} · <span class="selo s-cz">${esc(CATS[e.categoria]||"")}</span></div></td><td><b>${e.casos}</b></td>
+ <td>${e.salario_min?`US$ ${e.salario_min}${e.salario_max&&e.salario_max!==e.salario_min?"–"+e.salario_max:""}/h`:"—"}</td><td class="rot">${esc(e.locais)}</td><td>${dataBR(e.ultima_decisao)}</td>
+ <td style="white-space:nowrap"><a class="btn sec peq" data-fora href="https://www.google.com/search?q=${encodeURIComponent('"'+e.empresa+'" careers '+(e.cargo||""))}">Site/vagas ↗</a></td></tr>`).join("")
+  :`<tr><td colspan="7">${vazio("🇺🇸","Dados ainda não baixados. Clique em “↻ Atualizar dados” (leva alguns minutos).")}</td></tr>`}
+["#pmEst","#pmCat"].forEach(s=>$(s).onchange=carregarPerm);$("#pmBusca").oninput=()=>{clearTimeout(tP);tP=setTimeout(carregarPerm,350)};
+$("#pmAtualizar").onclick=async()=>{const r=await api("/api/coletar",{fontes:["perm","forcar"]});toast(r.ok?"Baixando dados oficiais do green card… (alguns minutos)":r.mensagem);if(r.ok){ir("inicio");acompanhar()}};
+
+// ---------------------------------------------------------------- CAMINHOS
+const VIA={agora:["Possível já","s-ok"],preparar:["Com preparo (meses)","s-at"],longo:["Longo prazo (anos)","s-at"],nao:["Evite","s-er"]};
+async function carregarCaminhos(){const c=await api("/api/caminhos");
+ $("#verifEm").innerHTML=`📅 Regras conferidas em <b>${dataBR(c.verificado_em)}</b> em fontes oficiais e de advogados de imigração. Elas mudam com frequência – confira os links antes de decidir. Isto é informação, não aconselhamento jurídico.`;
+ $("#resumoVias").innerHTML=c.caminhos.filter(k=>k.viabilidade!=="nao").map(k=>`<a class="chip" href="#cam-${k.id}" style="text-decoration:none"><span class="selo ${VIA[k.viabilidade][1]}" style="margin:0 6px 0 0">${VIA[k.viabilidade][0]}</span>${esc(k.pais)} · ${esc(k.nome.split("–")[0])}</a>`).join("");
+ const ico=ok=>ok===true?"✅":ok===false?"❌":"❔";
+ $("#listaCaminhos").innerHTML=c.caminhos.map(k=>`<div class="card via via-${k.viabilidade} mt" id="cam-${k.id}"><div class="esq" style="justify-content:space-between;flex-wrap:wrap"><h2 style="margin:0">${esc(k.pais)} · ${esc(k.nome)}</h2><span class="selo ${VIA[k.viabilidade][1]}">${VIA[k.viabilidade][0]}</span></div>
+ <p>${esc(k.resumo)}</p><div class="grade g2">${k.familia?`<div><h4 class="rot" style="margin:0 0 4px">👨‍👩‍👧‍👦 FAMÍLIA</h4>${esc(k.familia)}</div>`:""}${k.custos?`<div><h4 class="rot" style="margin:0 0 4px">💰 CUSTOS</h4>${esc(k.custos)}</div>`:""}</div>
+ ${k.requisitos.length?`<div class="grade g2 mt"><div><h4 class="rot" style="margin:0 0 4px">REQUISITOS</h4>${k.requisitos.map(r=>`<div class="req">${ico(r.ok)} ${esc(r.texto)}</div>`).join("")}</div>
+ <div><h4 class="rot" style="margin:0 0 4px">PRÓXIMOS PASSOS</h4>${k.proximos_passos.map(x=>`<div class="req">→ ${esc(x)}</div>`).join("")}</div></div>`:""}
+ <div class="esq mt" style="flex-wrap:wrap">${k.links.map(([n,u])=>`<a class="btn sec peq" data-fora href="${esc(u)}">${esc(n)} ↗</a>`).join("")}</div></div>`).join("");
+ $("#ondeConferir").innerHTML=c.onde_conferir.map(o=>`<a class="btn sec" style="white-space:normal;justify-content:flex-start" data-fora href="${esc(o.url)}">🔗 ${esc(o.nome)}</a>`).join("")}
+
+// ---------------------------------------------------------------- GOLPE
+$("#btnGolpe").onclick=async()=>{const t=$("#txtGolpe").value.trim();if(!t)return toast("Cole o texto da oferta primeiro.");const r=await api("/api/golpe",{texto:t});
+ const cor=r.nivel==="ALTO"?"var(--er)":r.nivel==="MÉDIO"?"#d97706":"var(--ok)";
+ $("#resGolpe").innerHTML=`<div class="esq" style="gap:16px"><div class="anel g" style="--v:${r.risco};--c:${cor}">${r.risco}</div><div><h2 style="margin:0;color:${cor}">Risco ${r.nivel}</h2><div class="rot">${r.alertas.length} sinal(is) de alerta</div></div></div>
+ ${r.alertas.length?`<ul class="motivos mt">${r.alertas.map(a=>`<li>⚠️ ${esc(a.motivo)}</li>`).join("")}</ul>`:"<p>Nenhum sinal clássico de golpe encontrado.</p>"}
+ ${r.positivos.length?`<p><b>Pontos a favor:</b> ${r.positivos.map(esc).join(" ")}</p>`:""}<p class="rot">${esc(r.lembrete)}</p>`};
+$("#btnAddManual").onclick=()=>{if(!$("#txtGolpe").value.trim())return toast("Cole o texto da oferta primeiro.");
+ modal(`<h2 style="margin-top:0">Salvar oferta para acompanhar</h2><div class="grade g2"><label class="campo">Cargo<input id="mTit" value="Vaga recebida"></label><label class="campo">Empresa<input id="mEmp"></label>
+ <label class="campo">País<select id="mPais"><option value="CA">Canadá</option><option value="US">EUA</option></select></label><label class="campo">Link do anúncio (se tiver)<input id="mUrl"></label></div>
+ <div class="esq mt"><button class="btn" id="mSalvar">Salvar</button><button class="btn fant" onclick="fecharModal()">Cancelar</button></div>`);
+ $("#mSalvar").onclick=async()=>{const r=await api("/api/vaga_manual",{texto:$("#txtGolpe").value,titulo:$("#mTit").value,empresa:$("#mEmp").value,pais:$("#mPais").value,url:$("#mUrl").value});
+  await api("/api/candidatura",{vaga_id:r.id,status:"interesse"});fecharModal();toast(`Salva em Candidaturas · risco de golpe ${r.risco_golpe}/100`)}};
+
+// ---------------------------------------------------------------- PERFIL
+const CAT_OPTS=()=>Object.entries(CATS).map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join("");
+function linha(tipo,o={}){const d=document.createElement("div");d.className="linha-exp";
+ d.innerHTML=tipo==="exp"?`<select class="a">${CAT_OPTS()}</select><input class="b" placeholder="Cargo (ex: Ajudante de pedreiro)"><input class="c" placeholder="Empresa"><input class="d" type="number" step="0.5" min="0" placeholder="Anos"><input class="e" placeholder="Período (ex: 2019–2022)"><button class="btn fant peq" title="Remover">✕</button>`
+ :`<select class="a">${CAT_OPTS()}</select><input class="b" placeholder="Nome do curso"><input class="c" placeholder="Instituição"><input class="d" type="number" placeholder="Horas"><input class="e" placeholder="Processos (MIG, eletrodo…)"><button class="btn fant peq">✕</button>`;
+ const q=s=>d.querySelector(s);q(".a").value=o.categoria||(tipo==="exp"?"construcao":"soldagem");q(".b").value=(tipo==="exp"?o.cargo:o.nome)||"";q(".c").value=(tipo==="exp"?o.empresa:o.instituicao)||"";
+ q(".d").value=(tipo==="exp"?o.anos:o.horas)??"";q(".e").value=(tipo==="exp"?o.periodo:o.processos)||"";q("button").onclick=()=>d.remove();return d}
+$("#addExp").onclick=()=>$("#exps").appendChild(linha("exp"));$("#addCurso").onclick=()=>$("#cursos").appendChild(linha("curso"));
+function medidorPerfil(){const c=completude(PERFIL);$("#pctPerfil").textContent=c.pct+"%";$("#barPerfil").style.width=c.pct+"%";$("#barPerfil").style.background=c.pct===100?"var(--ok)":"linear-gradient(90deg,#f59e0b,#22c55e)";$("#faltaPerfil").textContent=c.falta.length?"Falta: "+c.falta.join(", "):"Tudo certo ✔"}
+async function carregarPerfil(){await base();FONTES=await api("/api/fontes");const p=PERFIL,s=(id,v)=>$(id).value=v??"";
+ s("#pNome",p.nome);s("#pEmail",p.email);s("#pTel",p.telefone);s("#pCidade",p.cidade);s("#pUF",p.estado);s("#pPais",p.pais_cidadania);s("#pIdade",p.idade);s("#pCivil",p.estado_civil);
+ s("#pFilhos",(p.filhos||[]).length);s("#pIdadesF",(p.filhos||[]).map(f=>f.idade).filter(x=>x!==null&&x!==undefined).join(", "));s("#pIngles",p.ingles);s("#pTeste",(p.teste_idioma||{}).tipo);
+ s("#pEsc",(p.escolaridade||{}).nivel);s("#pCurso",(p.escolaridade||{}).curso);s("#pPrev",(p.escolaridade||{}).previsao_conclusao);s("#pConjProf",(p.conjuge||{}).profissao);s("#pConjIng",(p.conjuge||{}).ingles);
+ s("#pRenda",p.renda_mensal_brl);s("#pReserva",p.reserva_financeira_brl);s("#pPass",p.passaportes_familia_ok===null?"":String(p.passaportes_familia_ok));s("#pMin",(p.preferencias||{}).score_minimo);
+ $("#exps").innerHTML="";(p.experiencias||[]).forEach(e=>$("#exps").appendChild(linha("exp",e)));$("#cursos").innerHTML="";(p.cursos||[]).forEach(c=>$("#cursos").appendChild(linha("curso",c)));
+ const tg=FONTES.telegram||{};$("#tgToken").value=tg.token||"";$("#tgChat").value=tg.chat_id||"";$("#tgNota").value=tg.nota_minima??60;$("#tgAtivo").value=String(!!tg.ativo);
+ $("#fTermos").value=(FONTES.jobbank.termos||[]).join("\n");$("#aId").value=FONTES.adzuna.app_id||"";$("#aKey").value=FONTES.adzuna.app_key||"";$("#aAtivo").value=String(!!FONTES.adzuna.ativo);medidorPerfil()}
+const num=v=>v===""||v==null?null:Number(v);
+$("#btnSalvarPerfil").onclick=async()=>{const p=PERFIL;
+ Object.assign(p,{nome:$("#pNome").value.trim(),email:$("#pEmail").value.trim(),telefone:$("#pTel").value.trim(),cidade:$("#pCidade").value.trim(),estado:$("#pUF").value.trim().toUpperCase(),
+  pais_cidadania:$("#pPais").value.trim(),idade:num($("#pIdade").value),estado_civil:$("#pCivil").value,ingles:$("#pIngles").value,renda_mensal_brl:num($("#pRenda").value),reserva_financeira_brl:num($("#pReserva").value),
+  passaportes_familia_ok:$("#pPass").value===""?null:$("#pPass").value==="true"});
+ const nF=Number($("#pFilhos").value||0),ids=$("#pIdadesF").value.split(",").map(x=>x.trim()).filter(Boolean).map(Number);p.filhos=Array.from({length:nF},(_,i)=>({idade:Number.isFinite(ids[i])?ids[i]:null}));
+ p.teste_idioma={...(p.teste_idioma||{}),tipo:$("#pTeste").value.trim()};p.escolaridade={...(p.escolaridade||{}),nivel:$("#pEsc").value,curso:$("#pCurso").value.trim(),previsao_conclusao:$("#pPrev").value.trim()};
+ p.conjuge={...(p.conjuge||{}),profissao:$("#pConjProf").value.trim(),ingles:$("#pConjIng").value};p.preferencias={...(p.preferencias||{}),score_minimo:Number($("#pMin").value||40)};
+ p.experiencias=$$("#exps .linha-exp").map(d=>({categoria:d.querySelector(".a").value,cargo:d.querySelector(".b").value.trim(),empresa:d.querySelector(".c").value.trim(),anos:num(d.querySelector(".d").value),periodo:d.querySelector(".e").value.trim()}));
+ p.cursos=$$("#cursos .linha-exp").map(d=>({categoria:d.querySelector(".a").value,nome:d.querySelector(".b").value.trim(),instituicao:d.querySelector(".c").value.trim(),horas:num(d.querySelector(".d").value),processos:d.querySelector(".e").value.trim()}));
+ FONTES.telegram={...(FONTES.telegram||{}),token:$("#tgToken").value.trim(),chat_id:$("#tgChat").value.trim(),nota_minima:Number($("#tgNota").value||60),ativo:$("#tgAtivo").value==="true"};
+ FONTES.jobbank.termos=$("#fTermos").value.split("\n").map(x=>x.trim()).filter(Boolean);Object.assign(FONTES.adzuna,{app_id:$("#aId").value.trim(),app_key:$("#aKey").value.trim(),ativo:$("#aAtivo").value==="true"});
+ await api("/api/fontes",FONTES);const r=await api("/api/perfil",p);PERFIL=r.perfil;medidorPerfil();base();toast(`Perfil salvo ✔ · ${r.repontuadas} vagas recalculadas`)};
+
+$("#tgDescobrir").onclick=async()=>{try{const r=await api("/api/telegram/chat",{token:$("#tgToken").value});$("#tgChat").value=r.chat_id;$("#tgMsg").textContent="✔ Chat de "+r.nome+" encontrado. Clique em Enviar teste e depois em Salvar."}catch(e){$("#tgMsg").textContent="✖ "+e.message}};
+$("#tgTeste").onclick=async()=>{try{await api("/api/telegram/teste",{token:$("#tgToken").value,chat_id:$("#tgChat").value});$("#tgMsg").textContent="✔ Mensagem enviada! Ative e salve o perfil.";$("#tgAtivo").value="true"}catch(e){$("#tgMsg").textContent="✖ "+e.message}};
+
+// ---------------------------------------------------------------- início
+ir("inicio");
+setInterval(()=>fetch("/api/ping").catch(()=>{}),20000);
+</script>
+</body>
+</html>

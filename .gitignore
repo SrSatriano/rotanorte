@@ -1,0 +1,4 @@
+config/perfil.json
+dados/
+__pycache__/
+*.pyc
