@@ -78,7 +78,7 @@ O sistema só acessa sites do governo (e o Adzuna, se você ativar).
 - **Porta ocupada**: não precisa fazer nada. Se a porta 8765 estiver em uso por outro programa, o
   RotaNorte procura sozinho a próxima livre (8766, 8767…). Se ele já estiver aberto, só traz a janela de volta.
 - **Não abriu nada**: use `ABRIR_COM_LOG.bat` para ver a mensagem de erro (ou veja `dados/painel.log`).
-- **Testes (para quem programa)**: `py -m unittest discover -s tests`
+- **Testes (para quem programa)**: `py -m pip install -r requirements-dev.txt` e depois `py -m unittest discover -s tests`
 
 Feito com Python puro (sem instalar bibliotecas extras).
 
